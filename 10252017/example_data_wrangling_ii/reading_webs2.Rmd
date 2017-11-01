@@ -1,5 +1,5 @@
 ---
-title: "factors_strings"
+title: "webpage_reading"
 author: "Kwangmin Kim"
 date: "October 25, 2017"
 output: html_document
@@ -17,14 +17,85 @@ library(haven)
 library(rvest)
 library(stringr)
 library(forcats)
-theme_set(theme_bw())
-theme_update(legend.position = "bottom")
-pulse_data = read_sas("../../data/public_pulse_data.sas7bdat") %>%
-  clean_names() %>%
-  gather(key = visit, value = bdi, bdiscore_bl:bdiscore_12m) %>%
-  mutate(visit = str_replace(visit, "bdiscore_", ""),
-         visit = str_replace(visit, "bl", "00m"),
-         visit = fct_relevel(visit, str_c(c("00", "01", "06", "12"), "m"))) %>%
-  arrange(id, visit)
-print(pulse_data, n = 12)
+library(httr)
 ```
+
+##scraping
+
+### NSDUH table
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+drug_use_xml = read_html(url)
+
+drug_use_xml
+```
+
+
+```{r}
+drug_use_xml %>%
+  html_nodes(css = "table")
+```
+
+got the tables
+
+```{r}
+table_marj = (drug_use_xml %>% html_nodes(css = "table"))[[1]] %>%
+  html_table() %>%
+  .[-1,]%>%
+  as_tibble()
+
+```
+
+learning assignment
+```{r}
+url2= "https://www.bestplaces.net/cost_of_living/city/new_york/new_york"
+cost_of_living = read_html(url2)
+
+table_cost = (cost_of_living %>% html_nodes(css = "table"))[[2]]%>%html_table(header =TRUE)
+
+```
+
+##HP_SS Cast
+
+got the names
+```{r}
+
+url = "http://www.imdb.com/title/tt0241527/"
+
+hpss_xml = read_html(url)
+
+hpss_cast = hpss_xml %>%
+  html_nodes(css = ".itemprop .itemprop")%>%
+  html_text()
+
+```
+
+##Deantal hygiegne;;kdsdf
+```{r}
+url = "https://www.amazon.com/Philips-Sonicare-rechargeable-toothbrush-HX6211/product-reviews/B00YAR7ZFM/ref=cm_cr_arp_d_viewopt_srt?ie=UTF8&reviewerType=all_reviews&sortBy=recent&pageNumber=1"
+
+toothbrush_xml = read_html(url)
+toothbrush_title = toothbrush_xml%>%
+  html_nodes(css = "#cm_cr-review_list .a-color-base")%>%
+  html_text()
+
+toothbrush_stars = toothbrush_xml%>%
+  html_nodes(css = "#cm_cr-review_list .review-rating")%>%
+  html_text()
+
+toothbrush_df = data.frame(
+title = toothbrush_title,
+stars = toothbrush_stars
+)
+
+## APIs
+
+### water use data
+
+
+nyc_water = GET("https://data.cityofnewyork.us/resource/waf7-5gvc.csv") %>% 
+  content("parsed")
+
+getwd()
+```
+
