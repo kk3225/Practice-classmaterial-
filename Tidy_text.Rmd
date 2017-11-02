@@ -1,0 +1,27 @@
+---
+title: "Tidy_text"
+author: "Kwangmin Kim"
+date: "November 2, 2017"
+output: html_document
+---
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
